@@ -117,11 +117,13 @@ window.onload = async () => {
 
     const defaultQuery = "score:>400 order:random -upvote:no";
     let query = defaultQuery;
-    document.querySelector("#update-query").addEventListener("click", ev => {
+    document.querySelector("#update-query").addEventListener("click", async ev => {
         let queryValue = document.querySelector("#query").value.trim();
         query = queryValue !== "" ? queryValue : defaultQuery;
 
-        console.log(query);
+        media.length = 0;
+        await refillMedia();
+        await nextMedia();
     });
 
     let page = 1;
@@ -170,7 +172,10 @@ window.onload = async () => {
         }
 
         let mediaHistContainer = document.createElement("div");
-        mediaHistContainer.classList.add(extraClass);
+
+        if (extraClass) {
+            mediaHistContainer.classList.add(extraClass);
+        }
         mediaHistContainer.appendChild(currentMedia);
         history.prepend(mediaHistContainer);
 
