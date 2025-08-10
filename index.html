@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>e6-quickview</title>
+
+    <style>
+        body, html {
+            background-color: rgb(18, 18, 18);
+            color: white;
+            height: 100vh;
+            margin: 0;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+    </style>
+
+    <script>
+window.onload = () => {
+    if (localStorage.getItem("username") && localStorage.getItem("api-key")) {
+        window.location.href += "/qv";
+    }
+
+    ["#api-key", "#username"].forEach(e => {
+        document.querySelector(e).onkeydown = (ev) => {
+            if (ev.key === "Enter") {
+                ev.preventDefault();
+
+                let username = document.querySelector("#username").value;
+                let apiKey = document.querySelector("#api-key").value;
+
+                localStorage.setItem("username", username);
+                localStorage.setItem("api-key", apiKey);
+                window.location.href += "/qv";
+            }
+        };
+    });  
+};
+    </script>
+</head>
+<body>
+    <main>
+        <input id="username" placeholder="Your username">
+        <input type="password" id="api-key" placeholder="Your API key">
+
+        <p>
+            Enter your username and API key. (<code>Profile > Settings > API Key</code>)
+        </p>
+
+        <p>
+            <a href="controls">Controls</a>
+        </p>
+
+        <p>
+            Your API key never leaves your browser.
+        </p>
+
+        <p style="color: red; font-weight: bold;">
+            Work in progress. May be buggy. Definitely ugly.
+        </p>
+    </main>
+</body>
+</html>
