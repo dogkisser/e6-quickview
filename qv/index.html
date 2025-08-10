@@ -20,7 +20,7 @@
         }
 
         #sidebar {
-            width: 10%;
+            width: 15%;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -104,6 +104,15 @@ window.onload = async () => {
     const username = localStorage.getItem("username") || logout();
     const apiKey = localStorage.getItem("api-key") || logout();
 
+    const defaultQuery = "score:>400 order:random -upvote:no";
+    let query = defaultQuery;
+    document.querySelector("#update-query").addEventListener("click", ev => {
+        let queryValue = document.querySelector("#query").value.trim();
+        query = queryValue !== "" ? queryValue : defaultQuery;
+
+        console.log(query);
+    });
+
     let page = 1;
 
     let refilling = false;
@@ -116,10 +125,8 @@ window.onload = async () => {
 
         refilling = true;
 
-        const query = encodeURIComponent(
-            "score:>150 order:random -upvote:sdg -fart -scat -macro -micro -diaper");
-
-        let req = await rateLimited(fetch(`https://e621.net/posts.json?_client=e6-quickview&limit=${pageSize}&tags=${query}&login=${username}&api_key=${apiKey}&page=${page}`));
+        const q = encodeURIComponent(query);
+        let req = await rateLimited(fetch(`https://e621.net/posts.json?_client=e6-quickview&limit=${pageSize}&tags=${q}&login=${username}&api_key=${apiKey}&page=${page}`));
         if (!req.ok) {
             alert(`could not get more posts: ${req.status}`);
         }
@@ -217,6 +224,9 @@ window.onload = async () => {
     </script>
 <body>
     <div id="sidebar">
+        <input id="query" placeholder="score:>400 order:random -upvote:no">
+        <button id="update-query">Update Search</button>
+
         <a target="_blank" href="../controls">Controls</a>
         <button onclick="logout()">Logout</button>
 
