@@ -58,6 +58,9 @@
         }
     </style>
     <script>
+
+// here be dragons.
+
 function logout() {
     localStorage.removeItem("username");
     localStorage.removeItem("api-key");
@@ -115,18 +118,22 @@ window.onload = async () => {
     const username = localStorage.getItem("username") || logout();
     const apiKey = localStorage.getItem("api-key") || logout();
 
+    let page = 1;
+
+    let urlParams = new URLSearchParams(document.location.search);
+    let queryParam = urlParams.get("query");
+
     const defaultQuery = "score:>400 order:random -upvote:no";
-    let query = defaultQuery;
+    let query = queryParam ? queryParam : defaultQuery;
     document.querySelector("#update-query").addEventListener("click", async ev => {
         let queryValue = document.querySelector("#query").value.trim();
-        query = queryValue !== "" ? queryValue : defaultQuery;
+        query = queryValue ? queryValue : defaultQuery;
 
         media.length = 0;
+        page = 1;
         await refillMedia();
         await nextMedia();
     });
-
-    let page = 1;
 
     let refilling = false;
 
@@ -142,6 +149,7 @@ window.onload = async () => {
         let req = await rateLimited(fetch(`https://e621.net/posts.json?_client=e6-quickview&limit=${pageSize}&tags=${q}&login=${username}&api_key=${apiKey}&page=${page}`));
         if (!req.ok) {
             alert(`could not get more posts: ${req.status}`);
+            return;
         }
         let resp = await req.json();
 
@@ -157,13 +165,13 @@ window.onload = async () => {
     await refillMedia();
 
     let mediaView = document.querySelector("#media-view");
-    mediaView.appendChild(media.pop());
+    mediaView.appendChild(media.shift());
 
     const nextMedia = async (extraClass = "") => {
         const currentMedia = mediaView.firstElementChild;
         currentMedia.setAttribute("muted", "yes");
         currentMedia.remove();
-        mediaView.appendChild(media.pop());
+        mediaView.appendChild(media.shift());
         mediaView.firstElementChild.removeAttribute("muted");
 
         const history = document.querySelector("#history");
@@ -240,7 +248,7 @@ window.onload = async () => {
     </script>
 <body>
     <div id="sidebar">
-        <input id="query" placeholder="score:>400 order:random -upvote:no">
+        <input id="query" placeholder="score:>400 order:random -upvote:no" autocomplete="off">
         <button id="update-query">Update Search</button>
 
         <a target="_blank" href="../controls">Controls</a>
